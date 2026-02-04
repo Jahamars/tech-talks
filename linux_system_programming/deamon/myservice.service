@@ -1,0 +1,9 @@
+[Unit]
+Description=Моя простая служба
+
+[Service]
+ExecStart=/opt/myservice.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
