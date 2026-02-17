@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Manage</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0d0f12;
+  --surface:  #13171e;
+  --border:   #1e2530;
+  --border2:  #28334a;
+  --text:     #c4cdd9;
+  --muted:    #4e5f78;
+  --accent:   #3b82f6;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --mono:     'IBM Plex Mono', monospace;
+  --sans:     'IBM Plex Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* Header */
+header { background: var(--surface); border-bottom: 1px solid var(--border); height: 52px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 100; }
+.logo { font-family: var(--mono); font-size: 13px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 10px; letter-spacing: .08em; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.pill { font-family: var(--mono); font-size: 11px; padding: 3px 10px; border-radius: 2px; border: 1px solid var(--border2); color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.pill::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+.pill.ok { color: var(--green); border-color: #14532d; }
+.pill.err { color: var(--red); border-color: #7f1d1d; }
+
+/* Layout */
+.layout { display: flex; flex: 1; }
+
+nav { width: 196px; min-width: 196px; background: var(--surface); border-right: 1px solid var(--border); padding: 12px 0; position: sticky; top: 52px; height: calc(100vh - 52px); }
+.nav-group { padding: 0 10px; margin-bottom: 8px; }
+.nav-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; padding: 6px 8px 4px; }
+.nav-btn { display: flex; align-items: center; gap: 9px; width: 100%; padding: 7px 10px; border: none; border-radius: 3px; background: transparent; color: var(--text); font-family: var(--sans); font-size: 13px; cursor: pointer; transition: background .12s, color .12s; text-align: left; }
+.nav-btn:hover { background: var(--border); }
+.nav-btn.active { background: rgba(59,130,246,.12); color: #60a5fa; }
+.nav-ico { font-size: 12px; width: 16px; text-align: center; opacity: .6; }
+
+/* Main */
+main { flex: 1; padding: 24px; min-width: 0; }
+.page { display: none; animation: fadeIn .2s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* Page header */
+.ph { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.ph-title { font-family: var(--mono); font-size: 17px; font-weight: 600; color: #fff; }
+.ph-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 16px 18px; }
+.stat-n { font-family: var(--mono); font-size: 30px; font-weight: 600; color: #fff; line-height: 1; }
+.stat-l { font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
+
+/* Buttons */
+.btn { padding: 7px 15px; border-radius: 3px; border: 1px solid transparent; font-family: var(--mono); font-size: 12px; cursor: pointer; transition: all .12s; letter-spacing: .03em; }
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: #2563eb; }
+.btn-ghost { background: transparent; color: var(--text); border-color: var(--border2); }
+.btn-ghost:hover { background: var(--border); }
+.btn-sm { padding: 3px 9px; font-size: 11px; }
+.btn-del { color: var(--red); border-color: #450a0a; }
+.btn-del:hover { background: rgba(239,68,68,.08); }
+.btn-edit { color: var(--accent); border-color: #1e3a5f; }
+.btn-edit:hover { background: rgba(59,130,246,.08); }
+
+/* Search */
+.search { display: flex; gap: 8px; margin-bottom: 14px; }
+.search input { background: var(--surface); border: 1px solid var(--border2); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 7px 12px; border-radius: 3px; outline: none; width: 300px; transition: border-color .12s; }
+.search input::placeholder { color: var(--muted); }
+.search input:focus { border-color: var(--accent); }
+
+/* Table */
+.tbl-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 1px solid var(--border2); }
+th { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; padding: 10px 14px; text-align: left; white-space: nowrap; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(255,255,255,.018); }
+.mono { font-family: var(--mono); font-size: 12px; }
+.muted { color: var(--muted); }
+.chip { display: inline-block; padding: 2px 8px; border-radius: 2px; font-family: var(--mono); font-size: 11px; }
+.chip-blue { background: rgba(59,130,246,.1); color: #60a5fa; border: 1px solid rgba(59,130,246,.2); }
+.chip-green { background: rgba(34,197,94,.1); color: #4ade80; border: 1px solid rgba(34,197,94,.2); }
+.actions { display: flex; gap: 6px; }
+.empty { text-align: center; padding: 40px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+.loading-row td { color: var(--muted); font-family: var(--mono); font-size: 12px; text-align: center; padding: 32px; }
+
+/* Modal */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.72); backdrop-filter: blur(3px); z-index: 200; align-items: center; justify-content: center; }
+.overlay.open { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 5px; padding: 24px; width: 400px; max-width: 95vw; box-shadow: 0 32px 80px rgba(0,0,0,.6); }
+.modal-title { font-family: var(--mono); font-size: 14px; font-weight: 600; color: #fff; padding-bottom: 14px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.field { margin-bottom: 13px; }
+.field label { display: block; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 6px; }
+.field input, .field select { width: 100%; background: var(--bg); border: 1px solid var(--border2); color: var(--text); font-family: var(--sans); font-size: 13px; padding: 8px 11px; border-radius: 3px; outline: none; transition: border-color .12s; }
+.field input:focus, .field select:focus { border-color: var(--accent); }
+.field select option { background: var(--surface); }
+.modal-foot { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+
+/* Toast */
+#toast { position: fixed; bottom: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; padding: 10px 16px; font-family: var(--mono); font-size: 12px; box-shadow: 0 8px 30px rgba(0,0,0,.4); transform: translateY(60px); opacity: 0; transition: all .22s; z-index: 400; }
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.ok  { color: var(--green); border-color: #14532d; }
+#toast.err { color: var(--red);   border-color: #7f1d1d; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="dot"></div>HR_MANAGE</div>
+  <div id="hpill" class="pill">connecting</div>
+</header>
+
+<div class="layout">
+  <nav>
+    <div class="nav-group">
+      <div class="nav-lbl">Overview</div>
+      <button class="nav-btn active" onclick="go('dashboard')"><span class="nav-ico">◈</span>Dashboard</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-lbl">HR Data</div>
+      <button class="nav-btn" onclick="go('employees')"><span class="nav-ico">◉</span>Employees</button>
+      <button class="nav-btn" onclick="go('departments')"><span class="nav-ico">◧</span>Departments</button>
+      <button class="nav-btn" onclick="go('positions')"><span class="nav-ico">◈</span>Positions</button>
+      <button class="nav-btn" onclick="go('education')"><span class="nav-ico">◎</span>Education</button>
+    </div>
+    <div class="nav-group">
+      <div class="nav-lbl">Logs</div>
+      <button class="nav-btn" onclick="go('history')"><span class="nav-ico">≡</span>History</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Dashboard -->
+    <div id="p-dashboard" class="page active">
+      <div class="ph">
+        <div><div class="ph-title">Dashboard</div><div class="ph-sub">system overview</div></div>
+        <button class="btn btn-ghost" onclick="loadDashboard()">↺ refresh</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-n" id="s0">—</div><div class="stat-l">Employees</div></div>
+        <div class="stat"><div class="stat-n" id="s1">—</div><div class="stat-l">Departments</div></div>
+        <div class="stat"><div class="stat-n" id="s2">—</div><div class="stat-l">Positions</div></div>
+        <div class="stat"><div class="stat-n" id="s3">—</div><div class="stat-l">History Records</div></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Department</th><th>Position</th><th>Salary</th><th>Changes</th></tr></thead>
+          <tbody id="dt"><tr class="loading-row"><td colspan="5">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Employees -->
+    <div id="p-employees" class="page">
+      <div class="ph">
+        <div><div class="ph-title">Employees</div><div class="ph-sub" id="emp-sub">—</div></div>
+        <button class="btn btn-primary" onclick="openModal('employee',null)">+ Add Employee</button>
+      </div>
+      <div class="search">
+        <input id="emp-q" placeholder="Search by name, department, position…" oninput="searchEmp()">
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Department</th><th>Position</th><th>Education</th><th>Salary</th><th></th></tr></thead>
+          <tbody id="et"><tr class="loading-row"><td colspan="7">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Departments -->
+    <div id="p-departments" class="page">
+      <div class="ph">
+        <div><div class="ph-title">Departments</div></div>
+        <button class="btn btn-primary" onclick="openModal('department',null)">+ Add</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Employees</th><th></th></tr></thead>
+          <tbody id="deptt"><tr class="loading-row"><td colspan="4">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Positions -->
+    <div id="p-positions" class="page">
+      <div class="ph">
+        <div><div class="ph-title">Positions</div></div>
+        <button class="btn btn-primary" onclick="openModal('position',null)">+ Add</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Title</th><th>Salary</th><th></th></tr></thead>
+          <tbody id="post"><tr class="loading-row"><td colspan="4">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Education -->
+    <div id="p-education" class="page">
+      <div class="ph">
+        <div><div class="ph-title">Education</div></div>
+        <button class="btn btn-primary" onclick="openModal('education',null)">+ Add</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Level</th><th>Employees</th><th></th></tr></thead>
+          <tbody id="edut"><tr class="loading-row"><td colspan="4">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div id="p-history" class="page">
+      <div class="ph">
+        <div><div class="ph-title">Position History</div><div class="ph-sub">all changes</div></div>
+        <button class="btn btn-ghost" onclick="loadHistory()">↺ refresh</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Employee</th><th>Position</th><th>Salary</th></tr></thead>
+          <tbody id="hist"><tr class="loading-row"><td colspan="4">loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="ov" onclick="bgClose(event)">
+  <div class="modal">
+    <div class="modal-title" id="mtitle"></div>
+    <div id="mbody"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = '/api';
+let mType = null, mId = null;
+let _depts = [], _positions = [], _edus = [];
+
+// ── Routing ──────────────────────────────────────────────────────────────────
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-' + page).classList.add('active');
+  event.currentTarget.classList.add('active');
+  ({ dashboard: loadDashboard, employees: loadEmployees,
+     departments: loadDepartments, positions: loadPositions,
+     education: loadEducation, history: loadHistory })[page]();
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+async function req(path, opts = {}) {
+  const r = await fetch(API + path, { headers: {'Content-Type':'application/json'}, ...opts });
+  if (!r.ok) { const e = await r.json().catch(() => ({detail: r.statusText})); throw new Error(e.detail); }
+  return r.status === 204 ? null : r.json();
+}
+
+async function checkHealth() {
+  const p = document.getElementById('hpill');
+  try { await req('/health'); p.className = 'pill ok'; p.textContent = 'connected'; }
+  catch { p.className = 'pill err'; p.textContent = 'disconnected'; }
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(t._t); t._t = setTimeout(() => t.className = '', 3000);
+}
+
+// ── Format ────────────────────────────────────────────────────────────────────
+const money = n => '₽ ' + Number(n).toLocaleString('ru-RU');
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const [emps, depts, pos, hist] = await Promise.all([
+      req('/employees'), req('/departments'), req('/positions'), req('/history')
+    ]);
+    document.getElementById('s0').textContent = emps.length;
+    document.getElementById('s1').textContent = depts.length;
+    document.getElementById('s2').textContent = pos.length;
+    document.getElementById('s3').textContent = hist.length;
+
+    document.getElementById('dt').innerHTML = emps.length ? emps.map(e => `
+      <tr>
+        <td>${e.firstname}</td>
+        <td><span class="chip chip-blue">${e.departmentname}</span></td>
+        <td class="mono">${e.positionname}</td>
+        <td class="mono muted">${money(e.salary)}</td>
+        <td class="mono muted">${e.position_changes}</td>
+      </tr>`).join('') : `<tr><td colspan="5" class="empty">No employees</td></tr>`;
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+// ── Employees ─────────────────────────────────────────────────────────────────
+async function loadEmployees() {
+  await loadRefData();
+  try {
+    const data = await req('/employees');
+    document.getElementById('emp-sub').textContent = data.length + ' total';
+    renderEmployees(data);
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+function renderEmployees(data) {
+  document.getElementById('et').innerHTML = data.length ? data.map(e => `
+    <tr>
+      <td class="mono muted">${e.employeeid}</td>
+      <td><b>${e.firstname}</b></td>
+      <td><span class="chip chip-blue">${e.departmentname}</span></td>
+      <td class="mono">${e.positionname}</td>
+      <td class="muted">${e.educationname}</td>
+      <td class="mono muted">${money(e.salary)}</td>
+      <td><div class="actions">
+        <button class="btn btn-ghost btn-sm btn-edit" onclick='openModal("employee",${JSON.stringify(e)})'>edit</button>
+        <button class="btn btn-ghost btn-sm btn-del" onclick="delEmployee(${e.employeeid})">del</button>
+      </div></td>
+    </tr>`).join('') : `<tr><td colspan="7" class="empty">No employees</td></tr>`;
+}
+
+let _searchTimer;
+function searchEmp() {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(async () => {
+    const q = document.getElementById('emp-q').value.trim();
+    const url = q ? `/employees?search=${encodeURIComponent(q)}` : '/employees';
+    try { renderEmployees(await req(url)); } catch(e) { toast(e.message,'err'); }
+  }, 300);
+}
+
+async function delEmployee(id) {
+  if (!confirm('Delete this employee?')) return;
+  try { await req('/employees/' + id, {method:'DELETE'}); toast('Deleted'); loadEmployees(); }
+  catch(e) { toast(e.message, 'err'); }
+}
+
+// ── Departments ───────────────────────────────────────────────────────────────
+async function loadDepartments() {
+  try {
+    const data = await req('/departments');
+    document.getElementById('deptt').innerHTML = data.length ? data.map(d => `
+      <tr>
+        <td class="mono muted">${d.departmentid}</td>
+        <td>${d.departmentname}</td>
+        <td class="mono muted">${d.employee_count}</td>
+        <td><div class="actions">
+          <button class="btn btn-ghost btn-sm btn-edit" onclick='openModal("department",${JSON.stringify(d)})'>edit</button>
+          <button class="btn btn-ghost btn-sm btn-del" onclick="delDept(${d.departmentid})">del</button>
+        </div></td>
+      </tr>`).join('') : `<tr><td colspan="4" class="empty">No departments</td></tr>`;
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function delDept(id) {
+  if (!confirm('Delete department?')) return;
+  try { await req('/departments/' + id, {method:'DELETE'}); toast('Deleted'); loadDepartments(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// ── Positions ─────────────────────────────────────────────────────────────────
+async function loadPositions() {
+  try {
+    const data = await req('/positions');
+    document.getElementById('post').innerHTML = data.length ? data.map(p => `
+      <tr>
+        <td class="mono muted">${p.positionid}</td>
+        <td>${p.positionname}</td>
+        <td class="mono muted">${money(p.salary)}</td>
+        <td><div class="actions">
+          <button class="btn btn-ghost btn-sm btn-edit" onclick='openModal("position",${JSON.stringify(p)})'>edit</button>
+          <button class="btn btn-ghost btn-sm btn-del" onclick="delPos(${p.positionid})">del</button>
+        </div></td>
+      </tr>`).join('') : `<tr><td colspan="4" class="empty">No positions</td></tr>`;
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function delPos(id) {
+  if (!confirm('Delete position?')) return;
+  try { await req('/positions/' + id, {method:'DELETE'}); toast('Deleted'); loadPositions(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// ── Education ─────────────────────────────────────────────────────────────────
+async function loadEducation() {
+  try {
+    const data = await req('/education');
+    document.getElementById('edut').innerHTML = data.length ? data.map(e => `
+      <tr>
+        <td class="mono muted">${e.educationid}</td>
+        <td>${e.educationname}</td>
+        <td class="mono muted">${e.employee_count}</td>
+        <td><div class="actions">
+          <button class="btn btn-ghost btn-sm btn-edit" onclick='openModal("education",${JSON.stringify(e)})'>edit</button>
+          <button class="btn btn-ghost btn-sm btn-del" onclick="delEdu(${e.educationid})">del</button>
+        </div></td>
+      </tr>`).join('') : `<tr><td colspan="4" class="empty">No records</td></tr>`;
+  } catch(e) { toast(e.message,'err'); }
+}
+
+async function delEdu(id) {
+  if (!confirm('Delete education record?')) return;
+  try { await req('/education/' + id, {method:'DELETE'}); toast('Deleted'); loadEducation(); }
+  catch(e) { toast(e.message,'err'); }
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+async function loadHistory() {
+  try {
+    const data = await req('/history');
+    document.getElementById('hist').innerHTML = data.length ? data.map(h => `
+      <tr>
+        <td class="mono muted">${h.date}</td>
+        <td>${h.employee_name}</td>
+        <td class="mono">${h.positionname}</td>
+        <td class="mono muted">${money(h.salary)}</td>
+      </tr>`).join('') : `<tr><td colspan="4" class="empty">No history</td></tr>`;
+  } catch(e) { toast(e.message,'err'); }
+}
+
+// ── Reference data ────────────────────────────────────────────────────────────
+async function loadRefData() {
+  [_depts, _positions, _edus] = await Promise.all([
+    req('/departments'), req('/positions'), req('/education')
+  ]);
+}
+
+function sel(id, arr, valKey, lblKey, selected) {
+  return `<select id="${id}">${arr.map(i =>
+    `<option value="${i[valKey]}" ${i[valKey]==selected?'selected':''}>${i[lblKey]}</option>`
+  ).join('')}</select>`;
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+async function openModal(type, data) {
+  mType = type; mId = data ? (data.departmentid || data.positionid || data.educationid || data.employeeid) : null;
+  if (type === 'employee') await loadRefData();
+
+  const titles = { employee:'Employee', department:'Department', position:'Position', education:'Education' };
+  document.getElementById('mtitle').textContent = (mId ? 'Edit ' : 'Add ') + titles[type];
+
+  const forms = {
+    department: `
+      <div class="field"><label>Department Name</label>
+        <input id="f-name" value="${data?.departmentname||''}"></div>`,
+    position: `
+      <div class="field"><label>Position Title</label>
+        <input id="f-name" value="${data?.positionname||''}"></div>
+      <div class="field"><label>Salary (₽)</label>
+        <input id="f-salary" type="number" min="0" value="${data?.salary||''}"></div>`,
+    education: `
+      <div class="field"><label>Education Level</label>
+        <input id="f-name" value="${data?.educationname||''}"></div>`,
+    employee: `
+      <div class="field"><label>Full Name</label>
+        <input id="f-name" value="${data?.firstname||''}"></div>
+      <div class="field"><label>Department</label>
+        ${sel('f-dept', _depts, 'departmentid', 'departmentname', data?.departmentid)}</div>
+      <div class="field"><label>Position</label>
+        ${sel('f-pos', _positions, 'positionid', 'positionname', data?.positionid)}</div>
+      <div class="field"><label>Education</label>
+        ${sel('f-edu', _edus, 'educationid', 'educationname', data?.educationid)}</div>`,
+  };
+
+  document.getElementById('mbody').innerHTML = forms[type];
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('mbody').querySelector('input')?.focus();
+}
+
+function closeModal() { document.getElementById('ov').classList.remove('open'); }
+function bgClose(e) { if (e.target.id === 'ov') closeModal(); }
+
+async function saveModal() {
+  try {
+    const name = document.getElementById('f-name')?.value.trim();
+    if (mType !== 'employee' && !name) { toast('Name is required', 'err'); return; }
+
+    let body, url, method;
+
+    if (mType === 'department') {
+      body = { name };
+      url = mId ? `/departments/${mId}` : '/departments';
+      method = mId ? 'PUT' : 'POST';
+    } else if (mType === 'position') {
+      const salary = parseFloat(document.getElementById('f-salary').value);
+      if (isNaN(salary) || salary < 0) { toast('Invalid salary', 'err'); return; }
+      body = { name, salary };
+      url = mId ? `/positions/${mId}` : '/positions';
+      method = mId ? 'PUT' : 'POST';
+    } else if (mType === 'education') {
+      body = { name };
+      url = mId ? `/education/${mId}` : '/education';
+      method = mId ? 'PUT' : 'POST';
+    } else if (mType === 'employee') {
+      if (!name) { toast('Name is required', 'err'); return; }
+      body = {
+        first_name: name,
+        department_id: parseInt(document.getElementById('f-dept').value),
+        position_id:   parseInt(document.getElementById('f-pos').value),
+        education_id:  parseInt(document.getElementById('f-edu').value),
+      };
+      url = mId ? `/employees/${mId}` : '/employees';
+      method = mId ? 'PUT' : 'POST';
+    }
+
+    await req(url, { method, body: JSON.stringify(body) });
+    toast(mId ? 'Updated ✓' : 'Created ✓');
+    closeModal();
+
+    // Reload current page
+    const pages = { employee:'employees', department:'departments', position:'positions', education:'education' };
+    ({ employees: loadEmployees, departments: loadDepartments,
+       positions: loadPositions, education: loadEducation })[pages[mType]]();
+  } catch(e) { toast(e.message, 'err'); }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+checkHealth();
+setInterval(checkHealth, 30000);
+loadDashboard();
+</script>
+</body>
+</html>

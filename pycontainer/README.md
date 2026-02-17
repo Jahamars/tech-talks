@@ -1,6 +1,5 @@
-## Simple container using Linux namespaces and cgroups v2 in python.
+## Simple container using Linux namespaces and cgroups in python.
 
-### Usage
 ```bash
 sudo python3 container.py [command]
 ```
@@ -10,5 +9,5 @@ sudo python3 container.py [command]
 - `memory` - Memory limit test
 - `help` - Show help
 
-### Requirements
-- BusyBox: 
+### Requirements: 
+- BusyBox

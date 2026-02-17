@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: hrmanage
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS Education (
+        EducationID serial PRIMARY KEY,
+        EducationName varchar(100) NOT NULL UNIQUE
+    );
+    CREATE TABLE IF NOT EXISTS Departments (
+        DepartmentID serial PRIMARY KEY,
+        DepartmentName varchar(100) NOT NULL UNIQUE
+    );
+    CREATE TABLE IF NOT EXISTS Positions (
+        PositionID serial PRIMARY KEY,
+        PositionName varchar(100) NOT NULL UNIQUE,
+        Salary numeric(10, 2) NOT NULL CHECK (Salary >= 0)
+    );
+    CREATE TABLE IF NOT EXISTS Employees (
+        EmployeeID serial PRIMARY KEY,
+        FirstName varchar(100) NOT NULL,
+        EducationID int NOT NULL REFERENCES Education(EducationID),
+        DepartmentID int NOT NULL REFERENCES Departments(DepartmentID),
+        PositionID int NOT NULL REFERENCES Positions(PositionID)
+    );
+    CREATE TABLE IF NOT EXISTS History (
+        HistoryID serial PRIMARY KEY,
+        EmployeeID int NOT NULL REFERENCES Employees(EmployeeID),
+        PositionID int NOT NULL REFERENCES Positions(PositionID),
+        Date date NOT NULL
+    );
+
+    INSERT INTO Education (EducationName) VALUES
+      ('High School'), ('Associate Degree'), ('Bachelor''s Degree'),
+      ('Master''s Degree'), ('Doctorate')
+    ON CONFLICT (EducationName) DO NOTHING;
+
+    INSERT INTO Departments (DepartmentName) VALUES
+      ('Human Resources'), ('Engineering'), ('Sales'), ('Marketing'), ('Customer Support')
+    ON CONFLICT (DepartmentName) DO NOTHING;
+
+    INSERT INTO Positions (PositionName, Salary) VALUES
+      ('Intern', 15000.00), ('Junior Developer', 45000.00),
+      ('Senior Developer', 85000.00), ('Manager', 95000.00), ('Director', 125000.00)
+    ON CONFLICT (PositionName) DO NOTHING;
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+  namespace: hrmanage
+type: Opaque
+stringData:
+  POSTGRES_DB:       hrdb
+  POSTGRES_USER:     postgres
+  POSTGRES_PASSWORD: postgres
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: hrmanage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: hrmanage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+            - name: init
+              mountPath: /docker-entrypoint-initdb.d
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres", "-d", "hrdb"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "postgres", "-d", "hrdb"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+        - name: init
+          configMap:
+            name: postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: hrmanage
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
