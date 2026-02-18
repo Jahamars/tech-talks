@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +7,6 @@
   <meta name="description" content="Tech talks and presentations by Jahongir Ahmadaliev">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<<<<<<< HEAD
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    :root{
-      --bg:#282828;
-      --glass:rgba(255,255,255,0.04);
-      --glass-h:rgba(255,255,255,0.08);
-      --b:rgba(255,255,255,0.08);
-      --bh:rgba(255,255,255,0.15);
-      --text:#F3F3F3;
-      --muted:#909090;
-      --r:20px;
-      --pill:50px;
-=======
   <link href="https://fonts.googleapis.com/css2?family=Science+Gothic&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
   <style>
@@ -36,111 +20,8 @@
       --text:     #F0F0F0;
       --muted:    #888888;
       --r:        4px;
->>>>>>> b47c687 (gh api)
     }
-    html,body{overflow-x:hidden;max-width:100vw}
-    body{background:var(--bg);color:var(--text);font-family:'Orbitron',-apple-system,sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased}
 
-<<<<<<< HEAD
-    .aurora{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-    .blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.12;background:#3a3a3a;animation:drift 20s infinite alternate ease-in-out}
-    .b1{top:-10%;left:-10%;width:50vw;height:50vw}
-    .b2{bottom:-10%;right:-10%;width:60vw;height:60vw;animation-delay:-7s}
-    .b3{top:40%;left:40%;width:40vw;height:40vw;opacity:0.07;animation-delay:-14s}
-    @keyframes drift{to{transform:translate(30px,50px) scale(1.1)}}
-
-    .wrap{max-width:900px;margin:0 auto;padding:2.5rem 2rem;position:relative;z-index:1}
-
-    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4rem;gap:1rem}
-    .logo{font-size:1.3rem;font-weight:700}
-    nav{display:flex;gap:0.75rem;flex-wrap:wrap}
-    nav a{padding:0.55rem 1.3rem;background:var(--glass);border:1px solid var(--b);border-radius:var(--pill);color:var(--muted);text-decoration:none;font-size:0.8rem;font-weight:600;transition:all 0.25s;white-space:nowrap;backdrop-filter:blur(16px)}
-    nav a:hover{background:var(--glass-h);border-color:var(--bh);color:var(--text);transform:translateY(-2px)}
-
-    .hero{margin-bottom:3.5rem}
-    h1{font-size:2.75rem;font-weight:800;line-height:1.1;margin-bottom:0.5rem}
-    .sub{color:var(--muted);font-size:0.9rem}
-
-    .talks{display:flex;flex-direction:column;border:1px solid var(--b);border-radius:var(--r);overflow:hidden}
-
-    .talk{display:flex;align-items:center;gap:2rem;padding:1.5rem 1.75rem;background:var(--glass);cursor:pointer;transition:background 0.25s;border-bottom:1px solid var(--b)}
-    .talk:last-child{border-bottom:none}
-    .talk:hover{background:var(--glass-h)}
-    .talk:hover .arrow{transform:translateX(4px);opacity:1}
-
-    .talk-date{font-size:0.72rem;color:var(--muted);white-space:nowrap;min-width:70px;font-weight:600;letter-spacing:0.03em}
-    .talk-body{flex:1;min-width:0}
-    .talk-title{font-size:0.95rem;font-weight:700;margin-bottom:0.3rem;line-height:1.3}
-    .talk-desc{font-size:0.8rem;color:var(--muted);font-family:-apple-system,sans-serif;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .talk-tags{display:flex;gap:0.4rem;margin-top:0.6rem;flex-wrap:wrap}
-    .tag{font-size:0.65rem;font-weight:600;padding:0.2rem 0.6rem;border:1px solid var(--b);border-radius:var(--pill);color:var(--muted);font-family:'Orbitron',sans-serif;letter-spacing:0.04em;text-transform:uppercase}
-    .arrow{color:var(--muted);font-size:1rem;opacity:0.4;transition:all 0.25s;flex-shrink:0}
-
-    .state{padding:2rem;text-align:center;color:var(--muted);font-size:0.85rem;font-family:-apple-system,sans-serif}
-    .loader-wrap{display:flex;align-items:center;justify-content:center;gap:0.75rem}
-    .spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.1);border-top-color:rgba(255,255,255,0.5);border-radius:50%;animation:spin 0.7s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-
-    footer{margin-top:4rem;padding-top:2rem;border-top:1px solid var(--b);text-align:center;color:var(--muted);font-size:0.8rem}
-    footer a{color:var(--muted);text-decoration:none;border-bottom:1px solid var(--b)}
-    footer a:hover{color:var(--text)}
-
-    /* === DETAIL === */
-    .detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:200;overflow-y:auto}
-    .detail.open{display:block}
-    .detail-wrap{max-width:780px;margin:0 auto;padding:2.5rem 2rem 5rem}
-
-    .back-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.55rem 1.2rem;margin-bottom:2.5rem;background:var(--glass);border:1px solid var(--b);border-radius:var(--pill);color:var(--muted);font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.25s;font-family:'Orbitron',sans-serif}
-    .back-btn:hover{background:var(--glass-h);border-color:var(--bh);color:var(--text);transform:translateY(-2px)}
-
-    .d-meta{font-size:0.75rem;color:var(--muted);margin-bottom:0.75rem;font-weight:600;letter-spacing:0.05em}
-    .d-title{font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:0.75rem}
-    .d-desc{font-size:0.9rem;color:var(--muted);font-family:-apple-system,sans-serif;line-height:1.7;margin-bottom:1.75rem}
-
-    .d-actions{display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:2.5rem;border-bottom:1px solid var(--b)}
-    .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.65rem 1.4rem;border-radius:var(--pill);font-family:'Orbitron',sans-serif;font-size:0.8rem;font-weight:600;text-decoration:none;transition:all 0.25s;cursor:pointer;border:none}
-    .btn-s{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:var(--text)}
-    .btn-s:hover{background:rgba(255,255,255,0.16);border-color:rgba(255,255,255,0.35);transform:translateY(-2px)}
-    .btn-o{background:transparent;border:1px solid var(--b);color:var(--muted)}
-    .btn-o:hover{background:var(--glass);border-color:var(--bh);color:var(--text);transform:translateY(-2px)}
-
-    .readme-label{font-size:0.7rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
-    .readme-label::after{content:'';flex:1;height:1px;background:var(--b)}
-
-    .md{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:0.9rem;line-height:1.8;color:#c0c0c0}
-    .md h1,.md h2,.md h3{font-family:'Orbitron',sans-serif;color:var(--text);margin:1.75rem 0 0.75rem;font-weight:700}
-    .md h1{font-size:1.2rem}.md h2{font-size:1rem}.md h3{font-size:0.9rem}
-    .md p{margin-bottom:0.85rem}
-    .md code{background:rgba(255,255,255,0.07);border:1px solid var(--b);border-radius:6px;padding:0.15em 0.45em;font-size:0.85em;font-family:'JetBrains Mono','Fira Code',monospace;color:#e0e0e0}
-    .md pre{background:rgba(0,0,0,0.4);border:1px solid var(--b);border-radius:12px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
-    .md pre code{background:none;border:none;padding:0;font-size:0.85rem;color:#d0d0d0}
-    .md ul,.md ol{padding-left:1.5rem;margin-bottom:0.85rem}
-    .md li{margin-bottom:0.3rem}
-    .md a{color:#888;text-underline-offset:3px}
-    .md a:hover{color:var(--text)}
-    .md strong{color:var(--text);font-weight:600}
-    .md blockquote{border-left:3px solid var(--b);padding-left:1rem;margin:1rem 0;color:#777}
-    .md hr{border:none;border-top:1px solid var(--b);margin:1.5rem 0}
-    .md table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:0.85rem}
-    .md th,.md td{border:1px solid var(--b);padding:0.5rem 0.75rem;text-align:left}
-    .md th{background:rgba(255,255,255,0.05);color:var(--text);font-weight:600}
-    .md img{max-width:100%;border-radius:12px;margin:1rem 0}
-
-    @media(max-width:640px){
-      .wrap,.detail-wrap{padding:1.5rem 1rem}
-      header{flex-direction:column;align-items:flex-start;margin-bottom:2.5rem}
-      nav{gap:0.5rem}
-      nav a{font-size:0.75rem;padding:0.45rem 1rem}
-      h1,.d-title{font-size:1.75rem}
-      .talk{flex-direction:column;align-items:flex-start;gap:0.5rem;padding:1.25rem 1rem}
-      .talk-date{min-width:auto}
-      .arrow{display:none}
-      .talk-desc{white-space:normal}
-    }
-    @media(prefers-reduced-motion:reduce){
-      *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
-      .blob{animation:none}
-=======
     html, body { overflow-x: hidden; }
 
     body {
@@ -524,67 +405,32 @@
       .date { display: none; }
       .arr { display: none; }
       .desc { white-space: normal; }
->>>>>>> b47c687 (gh api)
     }
   </style>
 </head>
 <body>
 
-<<<<<<< HEAD
-<div class="aurora">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-</div>
-
-<div class="wrap" id="list-view">
-  <header>
-    <div class="logo">Jahongir Ahmadaliev</div>
-    <nav>
-      <a href="https://jahongir.ru">Home</a>
-      <a href="https://t.me/gruvboxx">Telegram</a>
-      <a href="https://github.com/jahamars">GitHub</a>
-=======
 <!-- list -->
 <div class="page" id="list-view">
   <header>
     <a class="logo" href="https://jahongir.ru">Jahongir Ahmadaliev</a>
     <nav>
       <a href="https://jahongir.ru">Home</a>
+      <a href="../sert/">Certificates</a>
       <a href="https://github.com/jahamars" target="_blank" rel="noopener">GitHub</a>
       <a href="https://t.me/gruvboxx" target="_blank" rel="noopener">Telegram</a>
->>>>>>> b47c687 (gh api)
     </nav>
   </header>
 
   <div class="hero">
     <h1>Tech Talks</h1>
-    <p class="sub">Presentations, deep dives & live demos</p>
+    <p class="sub">Presentations, deep dives &amp; demos</p>
   </div>
 
-<<<<<<< HEAD
-  <div class="talks" id="talks-list">
-    <div class="state"><div class="loader-wrap"><div class="spin"></div>Loading talks...</div></div>
-  </div>
-
-  <footer>
-    <p>© 2026 Jahongir Ahmadaliev · <a href="https://jahongir.ru">jahongir.ru</a></p>
-  </footer>
-</div>
-
-<div class="detail" id="detail-view">
-  <div class="detail-wrap">
-    <button class="back-btn" id="back-btn">← Back</button>
-    <div class="d-meta" id="d-meta"></div>
-    <div class="d-title" id="d-title"></div>
-    <div class="d-desc" id="d-desc"></div>
-    <div class="d-actions" id="d-actions"></div>
-    <div class="readme-label">README</div>
-    <div class="md" id="d-readme"><div class="loader-wrap"><div class="spin"></div></div></div>
-=======
   <div class="list" id="list"><div class="state"><span class="spin"></span>Loading...</div></div>
 
   <footer>
+    <span>Jahongir Ahmadaliev</span>
     <a href="https://jahongir.ru">jahongir.ru</a>
   </footer>
 </div>
@@ -600,25 +446,10 @@
     <div class="d-actions" id="d-actions"></div>
     <div class="readme-sep">README</div>
     <div class="md" id="d-readme"><span class="spin"></span></div>
->>>>>>> b47c687 (gh api)
   </div>
 </div>
 
 <script>
-<<<<<<< HEAD
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const OWNER = 'Jahamars';
-const REPO  = 'tech-talks';
-const BRANCH = 'main';
-
-// Dirs to skip at repo root
-const SKIP = new Set(['LICENSE', '.github', '.git']);
-
-const API  = `https://api.github.com/repos/${OWNER}/${REPO}/contents`;
-const RAW  = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
-const GH   = `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}`;
-// ─────────────────────────────────────────────────────────────────────────────
-=======
 // ── config ────────────────────────────────────────────────────────────
 const OWNER  = 'Jahamars';
 const REPO   = 'tech-talks';
@@ -632,22 +463,11 @@ const GH = path =>
 const GH_TREE = path =>
   `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/${path}`;
 // ─────────────────────────────────────────────────────────────────────
->>>>>>> b47c687 (gh api)
 
 const listEl   = document.getElementById('list');
 const listView = document.getElementById('list-view');
 const detail   = document.getElementById('detail');
 
-<<<<<<< HEAD
-function fmtDate(s) {
-  if (!s) return '';
-  const [y, m] = s.split('-');
-  return new Date(y, (m || 1) - 1).toLocaleDateString('en', { month: 'short', year: 'numeric' });
-}
-
-async function fetchJSON(url) {
-  const r = await fetch(url, { headers: { Accept: 'application/vnd.github.v3+json' } });
-=======
 const label = s => s.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
 function fmtDate(s) {
@@ -659,40 +479,18 @@ function fmtDate(s) {
 
 async function get(path) {
   const r = await fetch(API(path), { headers: { Accept: 'application/vnd.github.v3+json' } });
->>>>>>> b47c687 (gh api)
   if (!r.ok) throw new Error(r.status);
   return r.json();
 }
 
 async function load() {
   try {
-<<<<<<< HEAD
-    const contents = await fetchJSON(API);
-
-    const dirs = contents.filter(f => f.type === 'dir' && !SKIP.has(f.name));
-=======
     const root = await get('');
     const dirs = root.filter(f => f.type === 'dir' && !SKIP.has(f.name));
->>>>>>> b47c687 (gh api)
 
     const talks = await Promise.all(dirs.map(async d => {
       // try meta.json for rich data
       try {
-<<<<<<< HEAD
-        const raw = await fetch(`${RAW}/${dir.name}/meta.json`);
-        if (!raw.ok) throw 0;
-        const meta = await raw.json();
-        return { id: dir.name, ...meta };
-      } catch {
-        return {
-          id: dir.name,
-          title: dir.name.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
-          date: null,
-          desc: '',
-          tags: [],
-        };
-      }
-=======
         const r = await fetch(
           `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${d.name}/meta.json`
         );
@@ -703,23 +501,16 @@ async function load() {
       } catch {}
       // fallback: use directory name
       return { id: d.name, title: label(d.name), desc: '', tags: [], date: null };
->>>>>>> b47c687 (gh api)
     }));
 
     // newest first
     talks.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
     renderList(talks);
-<<<<<<< HEAD
-  } catch (e) {
-    listEl.innerHTML = `<div class="state">Failed to load talks. <a href="${GH}" target="_blank" style="color:var(--muted);border-bottom:1px solid var(--b)">View on GitHub →</a></div>`;
-=======
   } catch {
     listEl.innerHTML = `<div class="state">
       Could not load data.
       <a href="https://github.com/${OWNER}/${REPO}" target="_blank">View on GitHub</a>
     </div>`;
->>>>>>> b47c687 (gh api)
   }
 }
 
@@ -732,17 +523,6 @@ function renderList(talks) {
   listEl.innerHTML = '';
   talks.forEach(t => {
     const el = document.createElement('div');
-<<<<<<< HEAD
-    el.className = 'talk';
-    el.innerHTML = `
-      <div class="talk-date">${t.date ? fmtDate(t.date) : '—'}</div>
-      <div class="talk-body">
-        <div class="talk-title">${t.title}</div>
-        ${t.desc ? `<div class="talk-desc">${t.desc}</div>` : ''}
-        ${t.tags?.length ? `<div class="talk-tags">${t.tags.map(x => `<span class="tag">${x}</span>`).join('')}</div>` : ''}
-      </div>
-      <div class="arrow">→</div>
-=======
     el.className = 'item';
     el.innerHTML = `
       <span class="date">${t.date ? fmtDate(t.date) : '-'}</span>
@@ -752,23 +532,13 @@ function renderList(talks) {
         ${t.tags?.length ? `<span class="tags">${t.tags.map(x => `<span class="tag">${x}</span>`).join('')}</span>` : ''}
       </span>
       <span class="arr">-></span>
->>>>>>> b47c687 (gh api)
     `;
-    el.onclick = () => openDetail(t);
+    el.addEventListener('click', () => openDetail(t));
     listEl.appendChild(el);
   });
 }
 
 async function openDetail(t) {
-<<<<<<< HEAD
-  document.getElementById('d-meta').textContent = t.date ? fmtDate(t.date) : '';
-  document.getElementById('d-title').textContent = t.title;
-  document.getElementById('d-desc').textContent = t.desc || '';
-
-  const readmeEl = document.getElementById('d-readme');
-  readmeEl.innerHTML = '<div class="loader-wrap"><div class="spin"></div></div>';
-
-=======
   // populate static fields
   document.getElementById('d-date').textContent  = t.date ? fmtDate(t.date) : '';
   document.getElementById('d-title').textContent = t.title;
@@ -779,54 +549,10 @@ async function openDetail(t) {
   document.getElementById('d-readme').innerHTML  = '<span class="spin"></span>';
 
   // show detail
->>>>>>> b47c687 (gh api)
   listView.style.display = 'none';
   detail.classList.add('open');
   detail.scrollTop = 0;
 
-<<<<<<< HEAD
-  // Find PDF in directory
-  let pdfBtn = '';
-  try {
-    const files = await fetchJSON(`${API}/${t.id}`);
-    const pdf = files.find(f => f.name.endsWith('.pdf'));
-    if (pdf) {
-      pdfBtn = `<a href="${RAW}/${t.id}/${encodeURIComponent(pdf.name)}" target="_blank" class="btn btn-o">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        Slides PDF
-      </a>`;
-    }
-  } catch {}
-
-  document.getElementById('d-actions').innerHTML = `
-    <a href="${GH}/${t.id}" target="_blank" class="btn btn-s">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-      Source
-    </a>
-    ${pdfBtn}
-  `;
-
-  // Load README
-  try {
-    const res = await fetch(`${RAW}/${t.id}/README.md`);
-    if (!res.ok) throw 0;
-    readmeEl.innerHTML = marked.parse(await res.text());
-  } catch {
-    readmeEl.innerHTML = `<p style="color:var(--muted);font-family:-apple-system,sans-serif">README not available. <a href="${GH}/${t.id}" target="_blank">View on GitHub →</a></p>`;
-  }
-}
-
-document.getElementById('back-btn').onclick = () => {
-  detailV.classList.remove('open');
-  listView.style.display = '';
-};
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && detailV.classList.contains('open')) {
-    detailV.classList.remove('open');
-    listView.style.display = '';
-  }
-=======
   // fetch directory contents (one API call)
   try {
     const files = await get(t.id);
@@ -883,7 +609,6 @@ function closeDetail() {
 document.getElementById('back').addEventListener('click', closeDetail);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && detail.classList.contains('open')) closeDetail();
->>>>>>> b47c687 (gh api)
 });
 
 load();
