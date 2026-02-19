@@ -55,10 +55,6 @@ hrmanage/
 └── README.md
 ```
 
-Файлы которых нет и не нужно:
-- `info.sql` / `main.sql` — данные живут в `k8s/postgres.yaml` → ConfigMap → `init.sql`
-- `docker-compose.yml` — не нужен, всё управляется через kubectl
-
 ## Быстрый старт
 
 ### 1. Запустить Minikube
