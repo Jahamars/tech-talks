@@ -1,80 +1,74 @@
-# hrmanage
+microservice hr system: postgresql + fastapi + nginx/html — all in minikube
 
-HR-система на базе микросервисов: PostgreSQL + FastAPI + nginx/HTML — всё в  Minikube
-## Архитектура
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                      Namespace: hrmanage                         │
+│                      namespace: hrmanage                         │
 │                                                                  │
 │  ┌──────────────┐   /api/*    ┌────────────────┐                 │
 │  │   frontend   │────proxy───▶│  backend-api   │                 │
-│  │  nginx:1.27  │             │  FastAPI+Python│                 │
+│  │  nginx:1.27  │             │  fastapi+python│                 │
 │  │  port 80     │             │  port 8000     │                 │
-│  │  NodePort    │             │  ClusterIP     │                 │
-│  │  :30080  ◀───┼─── браузер  └───────┬────────┘                 │
+│  │  nodeport    │             │  clusterip     │                 │
+│  │  :30080  ◀───┼─── browser  └───────┬────────┘                 │
 │  └──────────────┘                     │                          │
 │                                       ▼                          │
 │                             ┌──────────────────┐                 │
 │                             │    postgres      │                 │
 │                             │  postgres:16     │                 │
 │                             │  port 5432       │                 │
-│                             │  ClusterIP       │                 │
+│                             │  clusterip       │                 │
 │                             └────────┬─────────┘                 │
 │                                      │                           │
 │                             ┌────────┴──────────┐                │
 │                             │   postgres-pvc    │                │
-│                             │   1Gi (данные БД) │                │
+│                             │   1gi (db data)   │                │
 │                             └───────────────────┘                │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-3 микросервиса:
-- `postgres` — база данных, ClusterIP (снаружи недоступен)
-- `backend-api` — REST API, ClusterIP (доступен только внутри кластера)
-- `frontend` — nginx отдаёт UI и проксирует `/api` к backend, NodePort :30080 (снаружи)
+3 microservices:
+- `postgres` — database, clusterip (not reachable from outside)
+- `backend-api` — rest api, clusterip (only inside cluster)
+- `frontend` — nginx serves ui and proxies `/api` to backend, nodeport :30080 (reachable)
 
-## Структура проекта
 ```
 hrmanage/
-├── backend/               # Микросервис 1: FastAPI
-│   ├── main.py            #   REST API (employees, departments, positions, education, history)
-│   ├── requirements.txt   #   Python зависимости
-│   └── Dockerfile         #   python:3.12-slim образ
+├── backend/               # fastapi service
+│   ├── main.py            #   rest api (employees, departments, positions, education, history)
+│   ├── requirements.txt   #   python deps
+│   └── dockerfile         #   python:3.12-slim base
 │
-├── frontend/              # Микросервис 2: Web UI
-│   ├── index.html         #   Single-page приложение (HTML + JS, без фреймворков)
-│   ├── nginx.conf         #   nginx конфиг + proxy_pass /api → backend-api
-│   └── Dockerfile         #   nginx:1.27-alpine образ
+├── frontend/              # web ui
+│   ├── index.html         #   single page (html + js, no frameworks)
+│   ├── nginx.conf         #   nginx config + proxy_pass /api → backend-api
+│   └── dockerfile         #   nginx:1.27-alpine base
 │
-├── k8s/                   # Kubernetes манифесты
-│   ├── namespace.yaml     #   Namespace hrmanage
-│   ├── postgres.yaml      #   ConfigMap (init.sql) + Secret + PVC + Deployment + Service
-│   ├── backend.yaml       #   Deployment + Service (ClusterIP)
-│   └── frontend.yaml      #   Deployment + Service (NodePort :30080)
+├── k8s/                   # kubernetes manifests
+│   ├── namespace.yaml     #   namespace hrmanage
+│   ├── postgres.yaml      #   configmap (init.sql) + secret + pvc + deployment + service
+│   ├── backend.yaml       #   deployment + service (clusterip)
+│   └── frontend.yaml      #   deployment + service (nodeport :30080)
 │
-└── README.md
+└── readme.md
 ```
 
-## Быстрый старт
-
-### 1. Запустить Minikube
+quick start
+1) start minikube
 ```bash
 minikube start
 ```
-
-### 2. Переключить Docker в окружение Minikube
+2) point docker to minikube env
 ```bash
 eval $(minikube docker-env)
 ```
-> Это важно — образы собираются сразу внутри Minikube, `minikube image load` не нужен.
-
-### 3. Собрать образы
+> important: images build inside minikube, no `minikube image load` needed.
+3) build images
 ```bash
 docker build -t backend-api:latest ./backend
 docker build -t frontend:latest ./frontend
 ```
 
-### 4. Задеплоить всё
+4) deploy everything
 ```bash
 kubectl apply -f k8s/namespace.yaml
 kubectl apply -f k8s/postgres.yaml
@@ -82,85 +76,84 @@ kubectl apply -f k8s/backend.yaml
 kubectl apply -f k8s/frontend.yaml
 ```
 
-### 5. Дождаться готовности
+5) wait until ready
 ```bash
 kubectl get pods -n hrmanage -w
 ```
-Ждём пока все поды станут `Running`
+wait for all pods to be `running`
 
-### 6. Открыть в браузере
+6) open in browser
 ```bash
-# Web UI
+# web ui
 echo "http://$(minikube ip):30080"
 
-# API Swagger
+# api swagger
 echo "http://$(minikube ip):30080/api/docs"
 ```
 
-## Что доступно
+what’s available
 
-| URL | Описание |
-|-----|----------|
-| `http://<ip>:30080` | Web UI — управление сотрудниками |
-| `http://<ip>:30080/api/docs` | Swagger — документация и тестирование API |
-| `http://<ip>:30080/api/health` | Health check API + БД |
+| url | description |
+|-----|-------------|
+| `http://<ip>:30080` | web ui — manage employees |
+| `http://<ip>:30080/api/docs` | swagger — api docs and testing |
+| `http://<ip>:30080/api/health` | health check api + db |
 
-> `<ip>` — результат команды `minikube ip` 
+> `<ip>` — result of `minikube ip`
 
-## API эндпоинты
+api endpoints
+| method | url | description |
+|-------|-----|-------------|
+| get | `/api/health` | health check |
+| get/post | `/api/employees` | list / create employees |
+| get/put/delete | `/api/employees/{id}` | single employee |
+| get | `/api/employees/{id}/history` | position history |
+| get/post | `/api/departments` | departments |
+| put/delete | `/api/departments/{id}` | update/delete department |
+| get/post | `/api/positions` | positions |
+| put/delete | `/api/positions/{id}` | update/delete position |
+| get/post | `/api/education` | education levels |
+| put/delete | `/api/education/{id}` | update/delete |
+| get | `/api/history` | full change history |
 
-| Метод | URL | Описание |
-|-------|-----|----------|
-| GET | `/api/health` | Health check |
-| GET/POST | `/api/employees` | Список / создание сотрудников |
-| GET/PUT/DELETE | `/api/employees/{id}` | Один сотрудник |
-| GET | `/api/employees/{id}/history` | История должностей |
-| GET/POST | `/api/departments` | Отделы |
-| PUT/DELETE | `/api/departments/{id}` | Изменить/удалить отдел |
-| GET/POST | `/api/positions` | Должности |
-| PUT/DELETE | `/api/positions/{id}` | Изменить/удалить должность |
-| GET/POST | `/api/education` | Уровни образования |
-| PUT/DELETE | `/api/education/{id}` | Изменить/удалить |
-| GET | `/api/history` | Полная история изменений |
-
-## Пересборка после изменений
+rebuild after changes
 ```bash
 eval $(minikube docker-env)
 
-# Пересобрать backend
+# rebuild backend
 docker build -t backend-api:latest ./backend
 kubectl rollout restart deployment/backend-api -n hrmanage
 
-# Пересобрать frontend
+# rebuild frontend
 docker build -t frontend:latest ./frontend
 kubectl rollout restart deployment/frontend -n hrmanage
 
-# Статус
+# status
 kubectl rollout status deployment/backend-api -n hrmanage
 kubectl rollout status deployment/frontend -n hrmanage
 ```
 
-## Полный сброс и перезапуск
+full reset and restart
 ```bash
 kubectl delete namespace hrmanage
 kubectl apply -f k8s/namespace.yaml -f k8s/postgres.yaml -f k8s/backend.yaml -f k8s/frontend.yaml
 ```
 
-## Отладка
+debug
 ```bash
-# Статус всех ресурсов
+# all resources
 kubectl get all -n hrmanage
 
-# Логи
+# logs
 kubectl logs -n hrmanage -l app=backend-api -f
 kubectl logs -n hrmanage -l app=frontend -f
 kubectl logs -n hrmanage -l app=postgres -f
 
-# Зайти в postgres
+# enter postgres
 kubectl exec -it -n hrmanage \
   $(kubectl get pod -n hrmanage -l app=postgres -o jsonpath='{.items[0].metadata.name}') \
   -- psql -U postgres -d hrdb
 
-# Описание пода 
+# describe pod 
 kubectl describe pod -n hrmanage -l app=backend-api
 ```
